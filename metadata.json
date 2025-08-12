@@ -1,0 +1,6 @@
+{
+  "name": "AuditFlow Sampling",
+  "description": "An intelligent tool for auditors to calculate sample sizes, perform statistical sampling (Simple Random, Systematic, Stratified, MUS), and evaluate results to ensure audit sufficiency.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}
