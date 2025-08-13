@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import type { DataRow } from '../types';
 import * as XLSX from 'xlsx';
@@ -7,11 +6,15 @@ interface Step2Props {
   populationSize: number;
   onUpload: (data: DataRow[], headers: string[]) => void;
   onBack: () => void;
+  onNext: () => void;
+  dataExtractionInfo: string;
+  onDataExtractionInfoChange: (info: string) => void;
 }
 
-const Step2_Upload: React.FC<Step2Props> = ({ populationSize, onUpload, onBack }) => {
+const Step2_Upload: React.FC<Step2Props> = ({ populationSize, onUpload, onBack, onNext, dataExtractionInfo, onDataExtractionInfoChange }) => {
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string>('');
+  const [parsedData, setParsedData] = useState<DataRow[]>([]);
   const [preview, setPreview] = useState<DataRow[]>([]);
   const [headers, setHeaders] = useState<string[]>([]);
   const [hasHeader, setHasHeader] = useState(true);
@@ -55,6 +58,7 @@ const Step2_Upload: React.FC<Step2Props> = ({ populationSize, onUpload, onBack }
       } else {
         setError(''); // Clear previous error if count matches.
       }
+      setParsedData(data);
       setPreview(data.slice(0, 5));
       setHeaders(headers);
       onUpload(data, headers);
@@ -62,6 +66,7 @@ const Step2_Upload: React.FC<Step2Props> = ({ populationSize, onUpload, onBack }
 
   const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setError('');
+    setParsedData([]);
     setPreview([]);
     setHeaders([]);
     const selectedFile = e.target.files?.[0];
@@ -136,6 +141,25 @@ const Step2_Upload: React.FC<Step2Props> = ({ populationSize, onUpload, onBack }
       }
     }
   }, [handleDataParsed, parseCSV, hasHeader]);
+  
+  const isNextDisabled = parsedData.length !== populationSize || dataExtractionInfo.trim() === '';
+
+  const getButtonTitle = () => {
+    const reasons = [];
+    if (!file) {
+        return 'É necessário carregar um arquivo de dados.';
+    }
+    if (parsedData.length !== populationSize) {
+      reasons.push('o arquivo carregado não corresponde ao tamanho da população');
+    }
+    if (dataExtractionInfo.trim() === '') {
+      reasons.push('a fonte dos dados não foi preenchida');
+    }
+    if (reasons.length > 0) {
+      return `Não é possível avançar porque ${reasons.join(' e ')}.`;
+    }
+    return 'Avançar para a próxima etapa';
+  };
 
   return (
     <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-4xl animate-fade-in">
@@ -156,6 +180,24 @@ const Step2_Upload: React.FC<Step2Props> = ({ populationSize, onUpload, onBack }
       {file && <p className="text-center mt-4 text-gray-600">Arquivo selecionado: <span className="font-bold">{file.name}</span></p>}
       
       {error && <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">{error}</div>}
+
+      <div className="w-full mt-6">
+        <label htmlFor="dataExtractionInfo" className="block text-sm font-bold text-gray-700 mb-1">
+            Fonte e Preparação dos Dados <span className="text-red-500">*</span>
+        </label>
+        <p className="text-xs text-gray-500 mb-2">
+            (Campo obrigatório) Descreva a fonte dos dados, filtros aplicados, responsável pela extração e outras informações relevantes para a rastreabilidade.
+        </p>
+        <textarea
+            id="dataExtractionInfo"
+            rows={4}
+            value={dataExtractionInfo}
+            onChange={(e) => onDataExtractionInfoChange(e.target.value)}
+            className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-[#0033C6] ${!dataExtractionInfo.trim() ? 'border-red-300' : 'border-gray-300'}`}
+            placeholder="Ex: Base extraída do SAP (transação FBL5N) em DD/MM/AAAA por [Nome do Responsável], filtrando por clientes ativos no último ano. A base original continha X linhas e foi limpa para remover duplicatas."
+            required
+        />
+    </div>
 
       {preview.length > 0 && (
         <div className="mt-6">
@@ -182,6 +224,14 @@ const Step2_Upload: React.FC<Step2Props> = ({ populationSize, onUpload, onBack }
       <div className="mt-8 flex justify-between">
         <button onClick={onBack} className="px-6 py-2 bg-gray-600 text-white font-bold rounded-lg shadow-md hover:bg-gray-700 transition-all duration-300">
           Voltar
+        </button>
+        <button 
+            onClick={onNext}
+            disabled={isNextDisabled}
+            title={getButtonTitle()}
+            className="px-8 py-3 bg-[#0033C6] text-white font-bold rounded-lg shadow-md hover:bg-blue-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105"
+        >
+            Próximo: Tipo de Amostragem
         </button>
       </div>
     </div>

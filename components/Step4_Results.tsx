@@ -55,7 +55,16 @@ const Step4_Results: React.FC<Step4Props> = ({ sampledData, samplingMethod, para
     const wsData: any[][] = [
         [{ v: "Formalização de Seleção de Amostra de Auditoria", s: { font: { bold: true, sz: 14, color: { rgb: "0033C6" } } } }],
         [],
-        [{ v: "1. Parâmetros da Amostragem", s: headerStyle }, {}],
+        [{ v: "1. Justificativa e Racional", s: headerStyle }, {}],
+        [{ 
+            v: "A seleção da amostra foi conduzida utilizando uma abordagem estatística para garantir que os itens selecionados sejam representativos da população total. O objetivo é obter evidência de auditoria suficiente e apropriada para suportar uma conclusão sobre as afirmações relevantes. Os parâmetros e o método de seleção foram definidos com base na avaliação de riscos do auditor e nos objetivos específicos do procedimento.", 
+            s: wrapTextStyle 
+        }, {}],
+        [],
+        [{ v: "2. Fonte e Preparação dos Dados", s: headerStyle }, {}],
+        [{ v: parameters.dataExtractionInfo || "Nenhuma informação fornecida.", s: wrapTextStyle }, {}],
+        [],
+        [{ v: "3. Parâmetros da Amostragem", s: headerStyle }, {}],
         [{ v: "Data e Hora da Geração", s: sectionHeaderStyle }, new Date().toLocaleString()],
         [{ v: "Tamanho da População (N)", s: sectionHeaderStyle }, parameters.populationSize],
         [{ v: "Nível de Confiança (C)", s: sectionHeaderStyle }, confidenceMap[parameters.confidenceLevel]],
@@ -72,7 +81,7 @@ const Step4_Results: React.FC<Step4Props> = ({ sampledData, samplingMethod, para
 
     wsData.push(
         [],
-        [{ v: "2. Método e Tamanho da Amostra", s: headerStyle }, {}],
+        [{ v: "4. Método e Tamanho da Amostra", s: headerStyle }, {}],
         [{ v: "Método de Seleção Utilizado", s: sectionHeaderStyle }, samplingMethod],
         [{ v: "Seed (Semente) Inicial", s: sectionHeaderStyle }, parameters.seed],
         [{ v: "Tamanho da Amostra Inicial (A)", s: sectionHeaderStyle }, sampleSizeA],
@@ -80,7 +89,7 @@ const Step4_Results: React.FC<Step4Props> = ({ sampledData, samplingMethod, para
     );
     
     if (testResultInfo && testResultInfo.complementarySampleSize > 0) {
-        wsData.push([], [{ v: "3. Testes e Amostra Complementar", s: headerStyle }, {}]);
+        wsData.push([], [{ v: "5. Testes e Amostra Complementar", s: headerStyle }, {}]);
         wsData.push([{ v: "Erros Encontrados (E)", s: sectionHeaderStyle }, testResultInfo.errorsFound]);
         
         if (!parameters.isFinancial) {
@@ -96,15 +105,16 @@ const Step4_Results: React.FC<Step4Props> = ({ sampledData, samplingMethod, para
     
     const ws = XLSX.utils.aoa_to_sheet(wsData);
     ws['!cols'] = [{ wch: 30 }, { wch: 50 }];
-    ws['!merges'] = [
-        { s: { r: 0, c: 0 }, e: { r: 0, c: 1 } },
-        { s: { r: 2, c: 0 }, e: { r: 2, c: 1 } },
-        { s: { r: wsData.findIndex(r => r[0]?.v?.includes("Método e Tamanho")), c: 0 }, e: { r: wsData.findIndex(r => r[0]?.v?.includes("Método e Tamanho")), c: 1 } },
-    ];
-    if (testResultInfo && testResultInfo.complementarySampleSize > 0) {
-        const testSectionRow = wsData.findIndex(r => r[0]?.v?.includes("Testes e Amostra"));
-        ws['!merges'].push({ s: { r: testSectionRow, c: 0 }, e: { r: testSectionRow, c: 1 } });
-    }
+
+    const merges: XLSX.Range[] = [];
+    wsData.forEach((row, r) => {
+        // Merge cells for headers and text blocks that span the width
+        if (row.length === 2 && row[1] && Object.keys(row[1]).length === 0) {
+            merges.push({ s: { r, c: 0 }, e: { r, c: 1 } });
+        }
+    });
+    ws['!merges'] = merges;
+    
     XLSX.utils.book_append_sheet(wb, ws, "Formalização");
 
     // --- Initial Sample Sheet ---

@@ -99,7 +99,7 @@ const Step3_Sampling: React.FC<Step3Props> = ({ onSelectMethod, onBack, headers,
           <label className="block text-sm font-bold text-gray-700 mb-2">Selecione a coluna de valor:</label>
           <select value={selectedColumn} onChange={e => setSelectedColumn(e.target.value)} className="w-full p-2 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-[#0033C6]">
             <option value="">-- Selecione uma coluna --</option>
-            {headers.filter(h => h.toLowerCase().includes('valor') || h.toLowerCase().includes('value') || h.toLowerCase().includes('amount') || h.toLowerCase().includes('saldo')).map(h => <option key={h} value={h}>{h}</option>)}
+            {headers.map(h => <option key={h} value={h}>{h}</option>)}
           </select>
         </div>
       )}

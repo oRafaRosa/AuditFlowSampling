@@ -1,6 +1,6 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
 import type { AuditParameters } from '../types';
+import Tooltip from './Tooltip';
 
 interface Step1Props {
   parameters: AuditParameters;
@@ -13,6 +13,12 @@ const MAX_INITIAL_SAMPLE_SIZE = 25;
 const R_WEIGHTS: Record<number, number> = { 1: 0.8, 2: 1.0, 3: 1.2, 4: 1.4 };
 const M_WEIGHTS: Record<number, number> = { 1: 1.3, 2: 1.0, 3: 0.8 };
 const C_WEIGHTS: Record<number, number> = { 1: 1.2, 2: 1.0, 3: 0.9 };
+
+const QuestionIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400 hover:text-[#0033C6] cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+);
 
 const Step1_Parameters: React.FC<Step1Props> = ({ parameters, onParametersChange, onNext }) => {
   const [localParams, setLocalParams] = useState<AuditParameters>(parameters);
@@ -60,55 +66,90 @@ const Step1_Parameters: React.FC<Step1Props> = ({ parameters, onParametersChange
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Tamanho da população (N)</label>
-              <input type="number" name="populationSize" value={localParams.populationSize || ''} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#0033C6]" placeholder="Ex: 15000" />
+                <label htmlFor="populationSize" className="flex items-center space-x-1.5 text-sm font-bold text-gray-700 mb-1">
+                    <span>Tamanho da população (N)</span>
+                    <Tooltip text="O número total de itens (ex: transações, faturas) na base de dados que será auditada. Deve corresponder ao número de linhas do arquivo carregado.">
+                        <QuestionIcon />
+                    </Tooltip>
+                </label>
+                <input id="populationSize" type="number" name="populationSize" value={localParams.populationSize || ''} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#0033C6]" placeholder="Ex: 15000" />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Nível de confiança (C)</label>
-              <select name="confidenceLevel" value={localParams.confidenceLevel} onChange={handleSelectChange} className="w-full p-2 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-[#0033C6]">
-                <option value={1}>1 - Baixo</option>
-                <option value={2}>2 - Médio</option>
-                <option value={3}>3 - Alto</option>
-              </select>
+                <label htmlFor="confidenceLevel" className="flex items-center space-x-1.5 text-sm font-bold text-gray-700 mb-1">
+                    <span>Nível de confiança (C)</span>
+                    <Tooltip text="Julgamento do auditor sobre a confiança na base e no sistema de origem. Um nível de confiança menor (indicando maior incerteza) exige uma amostra maior para obter segurança.">
+                        <QuestionIcon />
+                    </Tooltip>
+                </label>
+                <select id="confidenceLevel" name="confidenceLevel" value={localParams.confidenceLevel} onChange={handleSelectChange} className="w-full p-2 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-[#0033C6]">
+                    <option value={1}>1 - Baixo</option>
+                    <option value={2}>2 - Médio</option>
+                    <option value={3}>3 - Alto</option>
+                </select>
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Risco do processo (R)</label>
-              <select name="processRisk" value={localParams.processRisk} onChange={handleSelectChange} className="w-full p-2 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-[#0033C6]">
-                <option value={1}>1 - Baixo</option>
-                <option value={2}>2 - Médio</option>
-                <option value={3}>3 - Alto</option>
-                <option value={4}>4 - Crítico</option>
-              </select>
+                <label htmlFor="processRisk" className="flex items-center space-x-1.5 text-sm font-bold text-gray-700 mb-1">
+                    <span>Risco do processo (R)</span>
+                    <Tooltip text="Avaliação do risco inerente ao processo ou sistema. Um risco maior aumenta o tamanho da amostra.">
+                       <QuestionIcon />
+                    </Tooltip>
+                </label>
+                <select id="processRisk" name="processRisk" value={localParams.processRisk} onChange={handleSelectChange} className="w-full p-2 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-[#0033C6]">
+                    <option value={1}>1 - Baixo</option>
+                    <option value={2}>2 - Médio</option>
+                    <option value={3}>3 - Alto</option>
+                    <option value={4}>4 - Crítico</option>
+                </select>
             </div>
           </div>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Maturidade dos controles (M)</label>
-              <select name="controlsMaturity" value={localParams.controlsMaturity} onChange={handleSelectChange} className="w-full p-2 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-[#0033C6]">
-                <option value={1}>1 - Baixa</option>
-                <option value={2}>2 - Média</option>
-                <option value={3}>3 - Alta</option>
-              </select>
+                <label htmlFor="controlsMaturity" className="flex items-center space-x-1.5 text-sm font-bold text-gray-700 mb-1">
+                    <span>Maturidade dos controles (M)</span>
+                    <Tooltip text="Análise preliminar dos controles existentes com base em conversas iniciais. Controles maduros podem reduzir o tamanho da amostra.">
+                        <QuestionIcon />
+                    </Tooltip>
+                </label>
+                <select id="controlsMaturity" name="controlsMaturity" value={localParams.controlsMaturity} onChange={handleSelectChange} className="w-full p-2 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-[#0033C6]">
+                    <option value={1}>1 - Baixa</option>
+                    <option value={2}>2 - Média</option>
+                    <option value={3}>3 - Alta</option>
+                </select>
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Erro tolerável (T) (%)</label>
-              <input type="number" name="tolerableError" value={localParams.tolerableError || ''} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#0033C6]" placeholder="Ex: 5" />
+                <label htmlFor="tolerableError" className="flex items-center space-x-1.5 text-sm font-bold text-gray-700 mb-1">
+                    <span>Erro tolerável (T) (%)</span>
+                    <Tooltip text="O percentual de exceções (erros) que o auditor está disposto a aceitar nos resultados do teste. Nesta metodologia, um valor maior para o erro tolerável exige uma amostra maior.">
+                        <QuestionIcon />
+                    </Tooltip>
+                </label>
+                <input id="tolerableError" type="number" name="tolerableError" value={localParams.tolerableError || ''} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#0033C6]" placeholder="Ex: 5" />
             </div>
             <div className="flex items-center space-x-2 pt-2">
-              <input type="checkbox" id="isFinancial" name="isFinancial" checked={localParams.isFinancial} onChange={handleInputChange} className="h-4 w-4 text-[#0033C6] focus:ring-[#0033C6] border-gray-300 rounded" />
-              <label htmlFor="isFinancial" className="font-bold text-gray-700">A base é financeira?</label>
+                <input type="checkbox" id="isFinancial" name="isFinancial" checked={localParams.isFinancial} onChange={handleInputChange} className="h-4 w-4 text-[#0033C6] focus:ring-[#0033C6] border-gray-300 rounded" />
+                <label htmlFor="isFinancial" className="font-bold text-gray-700">A base é financeira?</label>
             </div>
           </div>
         </div>
         {localParams.isFinancial && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 animate-fade-in">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Valor total da base</label>
-              <input type="number" name="totalValue" value={localParams.totalValue || ''} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#0033C6]" placeholder="Ex: 1000000.00"/>
+                <label htmlFor="totalValue" className="flex items-center space-x-1.5 text-sm font-bold text-gray-700 mb-1">
+                    <span>Valor total da base</span>
+                    <Tooltip text="A soma de todos os valores monetários na população. Essencial para amostragem MUS e para calcular o erro projetado.">
+                        <QuestionIcon />
+                    </Tooltip>
+                </label>
+                <input id="totalValue" type="number" name="totalValue" value={localParams.totalValue || ''} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#0033C6]" placeholder="Ex: 1000000.00"/>
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Valor monetário mínimo</label>
-              <input type="number" name="minMonetaryValue" value={localParams.minMonetaryValue || ''} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#0033C6]" placeholder="Ex: 500.00" />
+                <label htmlFor="minMonetaryValue" className="flex items-center space-x-1.5 text-sm font-bold text-gray-700 mb-1">
+                    <span>Valor monetário mínimo</span>
+                    <Tooltip text="Itens com valor acima deste montante podem ser selecionados automaticamente para garantir a cobertura de itens de alto valor.">
+                        <QuestionIcon />
+                    </Tooltip>
+                </label>
+                <input id="minMonetaryValue" type="number" name="minMonetaryValue" value={localParams.minMonetaryValue || ''} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#0033C6]" placeholder="Ex: 500.00" />
             </div>
           </div>
         )}

@@ -1,4 +1,3 @@
-
 export enum AppStep {
   Parameters = 1,
   Upload = 2,
@@ -17,6 +16,7 @@ export interface AuditParameters {
   tolerableError: number; // as percentage (e.g., 5 for 5%)
   minMonetaryValue: number;
   seed: number;
+  dataExtractionInfo: string;
 }
 
 export type DataRow = Record<string, string | number>;

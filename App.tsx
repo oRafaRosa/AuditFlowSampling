@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import Header from './components/Header';
 import Step1_Parameters from './components/Step1_Parameters';
 import Step2_Upload from './components/Step2_Upload';
 import Step3_Sampling from './components/Step3_Sampling';
@@ -23,6 +24,7 @@ const initialParameters: AuditParameters = {
   tolerableError: 5,
   minMonetaryValue: 0,
   seed: Math.floor(Math.random() * 1000000),
+  dataExtractionInfo: '',
 };
 
 function App() {
@@ -61,11 +63,7 @@ function App() {
   const handleUpload = useCallback((data: DataRow[], fileHeaders: string[]) => {
     setOriginalData(data);
     setHeaders(fileHeaders);
-    // Automatically move to next step if data is valid
-    if (data.length === parameters.populationSize) {
-      setTimeout(() => setStep(AppStep.Sampling), 500);
-    }
-  }, [parameters.populationSize]);
+  }, []);
 
   const handleSelectSamplingMethod = (method: SamplingMethod, column?: string) => {
     let result: SampledItem[] = [];
@@ -154,6 +152,9 @@ function App() {
             populationSize={parameters.populationSize}
             onUpload={handleUpload}
             onBack={() => setStep(AppStep.Parameters)}
+            onNext={() => setStep(AppStep.Sampling)}
+            dataExtractionInfo={parameters.dataExtractionInfo}
+            onDataExtractionInfoChange={(info) => setParameters(p => ({...p, dataExtractionInfo: info}))}
           />
         );
       case AppStep.Sampling:
@@ -195,7 +196,8 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F0EFEA] flex flex-col items-center justify-center p-4 selection:bg-[#E71A3B] selection:text-white">
+    <div className="min-h-screen bg-[#F0EFEA] flex flex-col items-center justify-start pt-28 pb-8 px-4 selection:bg-[#E71A3B] selection:text-white">
+      <Header />
       <header className="text-center mb-8">
         <h1 className="text-4xl md:text-5xl font-bold text-[#0033C6]">AuditFlow Sampling</h1>
         <p className="text-lg text-gray-600 mt-2">Módulo oficial de seleção de amostras</p>
@@ -205,6 +207,7 @@ function App() {
       </main>
       <footer className="text-center mt-8 text-sm text-gray-500">
         <p>&copy; {new Date().getFullYear()} AuditFlow. Todos os direitos reservados.</p>
+        <p>Versão 13082025.2</p>
       </footer>
     </div>
   );
