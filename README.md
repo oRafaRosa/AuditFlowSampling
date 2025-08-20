@@ -104,18 +104,3 @@ Após o deploy no **GitHub Pages**, o app ficará disponível em:
 
 Este projeto é de uso interno, propriedade da **R² Solutions Group – Tech & Consulting**. Não é permitido o uso comercial sem autorização expressa.
 
----
-
-## 📞 Contato
-
-📧 **E-mail:** [contato@r2solutionsgroup.com](mailto:contato@r2solutionsgroup.com)
-🌐 **Site:** [www.r2solutionsgroup.com](https://www.r2solutionsgroup.com)
-📍 São Paulo – SP, Brasil
-
-```
-
----
-
-Se quiser, eu já coloco um **banner bonito** no topo com o logo e as cores da tua empresa, pra deixar o GitHub com cara de projeto premium.  
-Quer que eu já crie essa imagem e te mando pronta?
-```

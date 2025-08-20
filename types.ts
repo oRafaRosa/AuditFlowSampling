@@ -1,9 +1,10 @@
 export enum AppStep {
   Parameters = 1,
-  Upload = 2,
-  Sampling = 3,
-  Results = 4,
-  Test = 5,
+  TargetSelection = 2,
+  Upload = 3,
+  Sampling = 4,
+  Results = 5,
+  Test = 6,
 }
 
 export interface AuditParameters {
@@ -17,9 +18,13 @@ export interface AuditParameters {
   minMonetaryValue: number;
   seed: number;
   dataExtractionInfo: string;
+  hasTargetSelection: boolean;
+  targetSelectionCount: number;
+  targetSelectionValue: number;
+  targetSelectionRationale: string;
 }
 
-export type DataRow = Record<string, string | number>;
+export type DataRow = Record<string, string | number | boolean>;
 
 export enum SamplingMethod {
   None = "None",
@@ -31,6 +36,7 @@ export enum SamplingMethod {
 
 export interface SampledItem extends DataRow {
   _originalIndex: number;
+  _isReplacement?: boolean;
 }
 
 export enum QualitativeImpact {

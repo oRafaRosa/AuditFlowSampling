@@ -36,7 +36,7 @@ const Step1_5_Target: React.FC<Step1_5_TargetProps> = ({ parameters, onParameter
       <div className="mb-6">
         <label className="block text-sm font-bold text-gray-700 mb-2">Você possui itens pré-selecionados para teste (Target)?</label>
         <p className="text-xs text-gray-500 mb-3">
-          Itens a Target são transações ou registros selecionados manually com base no julgamento profissional do auditor, geralmente por serem de alto valor, alto risco ou representarem anomalias conhecidas.
+          Itens a Target são transações ou registros selecionados manualmente com base no julgamento profissional do auditor, geralmente por serem de alto valor, alto risco ou representarem anomalias conhecidas.
         </p>
         <div className="flex space-x-4">
           <button 
